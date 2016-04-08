@@ -26,7 +26,7 @@ import gtk
 
 PluginGlobals.push_env('microdrop.managed')
 
-class Step_Label_Plugin(Plugin, StepOptionsController):
+class StepLabelPlugin(Plugin, StepOptionsController):
     """
     This class is automatically registered with the PluginManager.
     """
@@ -95,20 +95,18 @@ class Step_Label_Plugin(Plugin, StepOptionsController):
         step_i = app.protocol.current_step_number
 
         i, most_recent_step_label = self.find_most_recent_step_label()
-
+        offset_str = (' ({}{})'.format('+' if i > step_i else '', i - step_i)
+                      if all([i is not None, i != step_i]) else '')
         (self.label_most_recent_step_label
-         .set_markup('<b>Most recent step label:</b> {}{}'
-                     .format(most_recent_step_label,
-                             ' ({})'.format(i) if all([i is not None,
-                                                       i != step_i])
-                             else '')))
+         .set_markup('<b>Most recent step label:</b>\n{}{}'
+                     .format(most_recent_step_label, offset_str)))
 
         i, next_step_label = self.find_next_step_label()
-        self.label_next_step_label.set_markup('<b>Next step label:</b> {}{}'
-                                                .format(next_step_label,
-                                                        ' ({})'.format(i)
-                                                        if i is not None
-                                                        else ''))
+        offset_str = (' ({}{})'.format('+' if i > step_i else '', i - step_i)
+                      if i is not None else '')
+        self.label_next_step_label.set_markup('<b>Next step label:</b>\n{}{}'
+                                              .format(next_step_label,
+                                                      offset_str))
 
     def on_step_options_changed(self, *args):
         self.update_nearest_step_labels()
