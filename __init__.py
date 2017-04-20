@@ -24,6 +24,10 @@ from microdrop.plugin_manager import (PluginGlobals, Plugin, IPlugin,
 from path_helpers import path
 import gtk
 
+from ._version import get_versions
+__version__ = get_versions()['version']
+del get_versions
+
 PluginGlobals.push_env('microdrop.managed')
 
 class StepLabelPlugin(Plugin, StepOptionsController):
@@ -31,7 +35,7 @@ class StepLabelPlugin(Plugin, StepOptionsController):
     This class is automatically registered with the PluginManager.
     """
     implements(IPlugin)
-    version = get_plugin_info(path(__file__).parent).version
+    version = __version__
     plugin_name = get_plugin_info(path(__file__).parent).plugin_name
 
     '''
@@ -134,7 +138,3 @@ class StepLabelPlugin(Plugin, StepOptionsController):
 
 
 PluginGlobals.pop_env()
-
-from ._version import get_versions
-__version__ = get_versions()['version']
-del get_versions
