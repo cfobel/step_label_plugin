@@ -17,18 +17,15 @@ build:
 
 requirements:
   build:
-    - 7za
     - flatland-fork
-    - git
     - microdrop >=2.4
-    - microdrop-plugin-manager >=0.10.post1
+    - microdrop-plugin-manager >=0.11
     - path_helpers >=0.2.post3
-    - pyyaml
 
   run:
     - flatland-fork
     - microdrop >=2.4
-    - microdrop-plugin-manager >=0.10
+    - microdrop-plugin-manager >=0.11
     - path_helpers >=0.2.post3
 
 about:
