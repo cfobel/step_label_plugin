@@ -13,7 +13,7 @@ package:
 
 build:
   number: 0
-  #script: python -m mpm.bin.build
+  script: python -m mpm.bin.build
 
 requirements:
   build:
@@ -21,7 +21,7 @@ requirements:
     - flatland-fork
     - git
     - microdrop >=2.4
-    - microdrop-plugin-manager >=0.10
+    - microdrop-plugin-manager >=0.10.post1
     - path_helpers >=0.2.post3
     - pyyaml
 
