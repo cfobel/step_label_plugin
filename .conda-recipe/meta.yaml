@@ -28,6 +28,10 @@ requirements:
     - microdrop-plugin-manager >=0.11
     - path_helpers >=0.2.post3
 
+test:
+  commands:
+    - python -m mpm.bin.import_test -a {{ PKG_NAME }}
+
 about:
   home: http://github.com/wheeler-microfluidics/step_label_plugin
   license: BSD
