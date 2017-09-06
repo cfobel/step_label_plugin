@@ -19,14 +19,16 @@ requirements:
   build:
     - flatland-fork
     - microdrop >=2.4
-    - microdrop-plugin-manager >=0.11
+    - microdrop-plugin-manager >=0.24
     - path_helpers >=0.2.post3
+    - wheeler.pygtkhelpers >=0.18
 
   run:
     - flatland-fork
     - microdrop >=2.4
-    - microdrop-plugin-manager >=0.11
+    - microdrop-plugin-manager >=0.24
     - path_helpers >=0.2.post3
+    - wheeler.pygtkhelpers >=0.18
 
 test:
   commands:
