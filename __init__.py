@@ -2,8 +2,9 @@ from flatland import Form, String
 from microdrop.app_context import get_app
 from microdrop.plugin_helpers import StepOptionsController, get_plugin_info
 from microdrop.plugin_manager import (PluginGlobals, Plugin, IPlugin,
-                                      emit_signal, implements)
+                                      implements)
 from path_helpers import path
+from pygtkhelpers.gthreads import gtk_threadsafe
 import gtk
 
 from ._version import get_versions
@@ -11,6 +12,7 @@ __version__ = get_versions()['version']
 del get_versions
 
 PluginGlobals.push_env('microdrop.managed')
+
 
 class StepLabelPlugin(Plugin, StepOptionsController):
     """
@@ -52,7 +54,13 @@ class StepLabelPlugin(Plugin, StepOptionsController):
         if self.initialized:
             self.remove_labels()
 
+    @gtk_threadsafe
     def add_labels(self):
+        '''
+        .. versionchanged:: 2.1.3
+            Wrap with :func:`gtk_threadsafe` decorator to ensure the code runs
+            in the main GTK thread.
+        '''
         app = get_app()
         self.label_most_recent_step_label = gtk.Label()
         (self.label_most_recent_step_label
@@ -67,7 +75,13 @@ class StepLabelPlugin(Plugin, StepOptionsController):
                                                            padding=5)
             label_i.show()
 
+    @gtk_threadsafe
     def remove_labels(self):
+        '''
+        .. versionchanged:: 2.1.3
+            Wrap with :func:`gtk_threadsafe` decorator to ensure the code runs
+            in the main GTK thread.
+        '''
         app = get_app()
         for child_i in app.main_window_controller.box_step.get_children():
             if any([child_i is self.label_most_recent_step_label,
@@ -76,11 +90,21 @@ class StepLabelPlugin(Plugin, StepOptionsController):
         self.label_most_recent_step_label = None
         self.label_next_step_label = None
 
-    def update_nearest_step_labels(self):
-        app = get_app()
-        step_i = app.protocol.current_step_number
+    @gtk_threadsafe
+    def update_nearest_step_labels(self, step_i):
+        '''
+        .. versionchanged:: 2.1.3
+            Add :data:`step_i` parameter.
 
-        i, most_recent_step_label = self.find_most_recent_step_label()
+            Wrap with :func:`gtk_threadsafe` decorator to ensure the code runs
+            in the main GTK thread.
+
+        Parameters
+        ----------
+        step_i : int
+            Step number to find labels relative to.
+        '''
+        i, most_recent_step_label = self.find_most_recent_step_label(step_i)
         offset_str = (' ({}{})'.format('+' if i > step_i else '', i - step_i)
                       if all([i is not None, i != step_i]) else '')
         (self.label_most_recent_step_label
@@ -95,23 +119,55 @@ class StepLabelPlugin(Plugin, StepOptionsController):
                                                       offset_str))
 
     def on_step_options_changed(self, *args):
-        self.update_nearest_step_labels()
+        '''
+        .. versionchanged:: 2.1.3
+            Pass current step number to as argument to
+            :meth:`update_nearest_step_labels`.
+        '''
+        app = get_app()
+        step_i = app.protocol.current_step_number
+        self.update_nearest_step_labels(step_i)
 
     def on_step_swapped(self, *args):
-        self.update_nearest_step_labels()
-
-    def find_most_recent_step_label(self):
+        '''
+        .. versionchanged:: 2.1.3
+            Pass current step number to as argument to
+            :meth:`update_nearest_step_labels`.
+        '''
         app = get_app()
-        for i in xrange(app.protocol.current_step_number, -1, -1):
-            most_recent_step_label = self.get_step_value('label', step_number=i)
+        step_i = app.protocol.current_step_number
+        self.update_nearest_step_labels(step_i)
+
+    def find_most_recent_step_label(self, step_i):
+        '''
+        .. versionchanged:: 2.1.3
+            Add :data:`step_i` parameter.
+
+        Parameters
+        ----------
+        step_i : int
+            Step number to find labels relative to.
+        '''
+        for i in xrange(step_i, -1, -1):
+            most_recent_step_label = self.get_step_value('label',
+                                                         step_number=i)
             if most_recent_step_label:
                 return i, most_recent_step_label
         else:
             return None, ''
 
-    def find_next_step_label(self):
+    def find_next_step_label(self, step_i):
+        '''
+        .. versionchanged:: 2.1.3
+            Add :data:`step_i` parameter.
+
+        Parameters
+        ----------
+        step_i : int
+            Step number to find labels relative to.
+        '''
         app = get_app()
-        for i in xrange(app.protocol.current_step_number + 1, len(app.protocol.steps)):
+        for i in xrange(step_i + 1, len(app.protocol.steps)):
             next_step_label = self.get_step_value('label', step_number=i)
             if next_step_label:
                 return i, next_step_label
