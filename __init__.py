@@ -99,6 +99,10 @@ class StepLabelPlugin(Plugin, StepOptionsController):
             Wrap with :func:`gtk_threadsafe` decorator to ensure the code runs
             in the main GTK thread.
 
+        .. versionchanged:: 2.2.1
+            Add missing :data:`step_i` argument to fix call to
+            :meth:`find_next_step_label`.
+
         Parameters
         ----------
         step_i : int
@@ -111,7 +115,7 @@ class StepLabelPlugin(Plugin, StepOptionsController):
          .set_markup('<b>Most recent step label:</b>\n{}{}'
                      .format(most_recent_step_label, offset_str)))
 
-        i, next_step_label = self.find_next_step_label()
+        i, next_step_label = self.find_next_step_label(step_i)
         offset_str = (' ({}{})'.format('+' if i > step_i else '', i - step_i)
                       if i is not None else '')
         self.label_next_step_label.set_markup('<b>Next step label:</b>\n{}{}'
